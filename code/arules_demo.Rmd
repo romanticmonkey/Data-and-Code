@@ -1,0 +1,104 @@
+---
+title: "Basic Association Rule Mining in R"
+author: "Philip Waggoner"
+date: " "
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## The Basics
+
+Let's walk through a brief demo of mining association rules in R. We will rely on the `arules` package, though there are other complementary packages out there, particularly `arulesViz`. Check it out if you're interested. 
+
+Note, sometimes association rule mining is called "market basket analysis." So out of respect for this, we will practice by mining some grocery data. But for your challenge, you will mine a large social science survey from the CDC. 
+
+First, load the data and read as transaction data.
+
+```{r echo = TRUE, eval = FALSE}
+library(arules)
+
+groceries <- read.transactions(".../groceries.csv", sep = ",")
+
+groceries <- read.transactions(file.choose(), sep = ",")
+```
+
+Inspect the basics of the data in a few ways...
+
+```{r echo = TRUE, eval = FALSE}
+summary(groceries)
+```
+
+```{r echo = TRUE, eval = FALSE}
+inspect(groceries[1:5])
+```
+
+```{r echo = TRUE, eval = FALSE}
+itemFrequency(groceries[ , 1:5])
+```
+
+Of note, `arules` relies on base R to plot, so the same commands apply, like margins, title, labs, etc.
+
+```{r echo = TRUE, eval = FALSE}
+itemFrequencyPlot(groceries, support = 0.1)
+
+itemFrequencyPlot(groceries, topN = 20)
+```
+
+For the following line, count the items for row 1 and corroborate with the previous display of the first to show blocks == items in a transaction.
+
+```{r echo = TRUE, eval = FALSE}
+image(groceries[1:5])
+```
+
+```{r echo = TRUE, eval = FALSE}
+image(sample(groceries, 100))
+```
+
+## The Apriori Algorithm
+
+Let's start with a basic implementation of `apriori()` to mine these data. 
+
+```{r echo = TRUE, eval = FALSE}
+g_rules <- apriori(groceries, 
+                   parameter = list(support = 0.006, 
+                                    confidence = 0.25, 
+                                    minlen = 2)); summary(g_rules)
+```
+
+```{r echo = TRUE, eval = FALSE}
+inspect(g_rules[1:3])
+```
+
+```{r echo = TRUE, eval = FALSE}
+inspect(sort(g_rules, by = "lift")[1:5])
+```
+
+What is "pip fruit"? We can inspect in a more targeted way via `%in%`.
+
+```{r echo = TRUE, eval = FALSE}
+library(tidyverse)
+
+pip_rules <- subset(g_rules, 
+                    items %in% "pip fruit"); inspect(sort(pip_rules, 
+                                                          by = "confidence"))
+```
+
+We can also write the results of our mining effort as a data frame via `as()`. Note, at last check, the function doesn't yet support tibbles.
+
+```{r echo = TRUE, eval = FALSE}
+g_rules_df <- as(g_rules, "data.frame")
+```
+
+Take a look...
+
+```{r echo = TRUE, eval = FALSE}
+glimpse(g_rules_df)
+
+# or
+
+g_rules_df %>% 
+  str()
+```
