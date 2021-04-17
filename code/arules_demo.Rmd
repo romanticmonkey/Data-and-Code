@@ -20,7 +20,7 @@ First, load the data and read as transaction data.
 ```{r echo = TRUE, eval = FALSE}
 library(arules)
 
-groceries <- read.transactions(".../groceries.csv", sep = ",")
+groceries <- read.transactions("../data/groceries.csv", sep = ",")
 
 groceries <- read.transactions(file.choose(), sep = ",")
 ```

@@ -6,7 +6,7 @@ author: |
   | pdwaggoner@uchicago.edu
 output: pdf_document
 urlcolor: blue
----
+---, eval = FALSE
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, eval = FALSE)
